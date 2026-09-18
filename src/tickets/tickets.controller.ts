@@ -1,11 +1,32 @@
-import { Controller,Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { CreateTicketDto } from './dto/create-ticket.dto.js';
+import { FilterTicketsQueryDto } from './dto/filter-tickets-query.dto.js';
 import { TicketsService } from './tickets.service.js';
-
 @Controller('tickets')
 export class TicketsController {
-    constructor(private readonly ticketsService: TicketsService){}
-    @Get()
-    findAll(){
-        return this.ticketsService.findAll();
-    }
+  constructor(private readonly ticketsService: TicketsService) {}
+  @Get()
+  findAll(@Query() filters: FilterTicketsQueryDto) {
+    return this.ticketsService.findAll(
+      filters.status === 'closed' ? 'close' : filters.status,
+      filters.priority,
+    );
+  }
+
+  @Get(`:id`)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ticketsService.findOne(id);
+  }
+  @Post()
+  create(@Body() CreateTicketDto: CreateTicketDto) {
+    return this.ticketsService.create(CreateTicketDto);
+  }
 }
