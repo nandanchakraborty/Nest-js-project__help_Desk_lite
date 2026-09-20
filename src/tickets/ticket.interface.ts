@@ -5,7 +5,7 @@ export interface Ticket {
     subject:string;
     description:string;
     priority:'low'|'medium'|'high';
-    status:'open'|'close';
+    status:'open'|'closed';
     createdAt:string;
 
 }

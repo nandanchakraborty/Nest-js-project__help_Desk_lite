@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
+import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { Ticket } from './ticket.interface.js';
 @Injectable()
 export class TicketsService {
@@ -17,7 +18,7 @@ export class TicketsService {
       subject: 'Invoice download not working',
       description: 'Invoice PDF download returns an empty file',
       priority: 'low',
-      status: 'close',
+      status: 'closed',
       createdAt: '2026-09-01T12:45:00:0002',
     },
   ];
@@ -51,5 +52,21 @@ export class TicketsService {
     };
     this.tickets.push(ticket);
     return ticket;
+  }
+  update(id: number, UpdateTicketDto: UpdateTicketDto) {
+    const ticket = this.findOne(id);
+    if(ticket.status === 'closed'){
+      throw new BadRequestException('closed ticket can not be updated')
+    }
+    Object.assign(ticket, UpdateTicketDto);
+    return ticket;
+  }
+  closeTicket(id:number){
+    const ticket = this.findOne(id);
+    if(ticket.status === 'closed'){
+      throw new BadRequestException('Ticket is already closed')
+    }
+    ticket.status = 'closed';
+    return;
   }
 }
